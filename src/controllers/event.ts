@@ -6,10 +6,9 @@ import { Item } from '../models/Item';
 const eventRepository = AppDataSource.getRepository(Event);
 const itemRepository = AppDataSource.getRepository(Item);
 
-// Añadir un evento
 export const addEvent = async (req: Request, res: Response): Promise<Response> => {
 	try {
-		const { itemId, description, location } = req.body;
+		const { itemId, description, location, custodian } = req.body;
 		const item = await itemRepository.findOneBy({ id: itemId });
 
 		if (!item) {
@@ -20,16 +19,16 @@ export const addEvent = async (req: Request, res: Response): Promise<Response> =
 		newEvent.description = description;
 		newEvent.location = location;
 		newEvent.timestamp = new Date();
+		newEvent.custodian = custodian;
 		newEvent.item = item;
 
 		await eventRepository.save(newEvent);
-		return res.status(201).json(newEvent); // Asegúrate de que siempre se devuelve una respuesta
+		return res.status(201).json(newEvent);
 	} catch (error) {
 		return res.status(500).json({ message: 'Error adding event', error });
 	}
 };
 
-// Obtener el último evento de un item
 export const getLastEvent = async (req: Request, res: Response): Promise<Response> => {
 	try {
 		const { itemId } = req.params;

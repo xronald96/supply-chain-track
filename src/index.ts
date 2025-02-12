@@ -1,7 +1,7 @@
 import express from 'express';
 import { json } from 'body-parser';
 import swaggerUi from 'swagger-ui-express';
-import { swaggerSpec } from './config/swagger';
+import YAML from 'yamljs';
 import { itemRouter } from './routes/item';
 import { eventRouter } from './routes/event';
 import { errorHandler } from './middleware/errorHandler';
@@ -15,23 +15,21 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+const swaggerDocument = YAML.load('./src/docs/swagger.yaml');
+
 app.use(json());
 app.use(cors());
 app.use(helmet());
 
-// Connect to Database
 AppDataSource.initialize()
 	.then(() => console.log('Database connected successfully'))
 	.catch((err) => console.error('Database connection error:', err));
 
-// Routes
 app.use('/api/items', itemRouter);
 app.use('/api/events', eventRouter);
 
-// Swagger Docs
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// Error Handling Middleware
 app.use(errorHandler);
 
 app.listen(PORT, () => {

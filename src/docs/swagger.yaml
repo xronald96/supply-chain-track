@@ -1,0 +1,197 @@
+openapi: 3.0.0
+info:
+    title: Supply Chain API
+    description: API to track and manage the supply chain
+    version: 1.0.0
+servers:
+    - url: http://localhost:3000
+
+paths:
+    /api/items:
+        post:
+            summary: Create a new item
+            description: Create a new item with name, color, and price.
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                name:
+                                    type: string
+                                color:
+                                    type: string
+                                price:
+                                    type: number
+                                    format: float
+                            required:
+                                - name
+                                - color
+                                - price
+            responses:
+                '201':
+                    description: Item successfully created
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Item'
+
+    /api/items/{id}:
+        put:
+            summary: Update an item by ID
+            description: Update an existing item with new name, color, and price.
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                      type: integer
+                  description: The ID of the item to be updated
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                name:
+                                    type: string
+                                color:
+                                    type: string
+                                price:
+                                    type: number
+                                    format: float
+                            required:
+                                - name
+                                - color
+                                - price
+            responses:
+                '200':
+                    description: Item successfully updated
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Item'
+                '404':
+                    description: Item not found
+
+    /api/items/{id}/events:
+        get:
+            summary: Get events for a specific item
+            description: Fetch a list of events related to the item by ID.
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  schema:
+                      type: integer
+                  description: The ID of the item to get events for
+            responses:
+                '200':
+                    description: A list of events for the item
+                    content:
+                        application/json:
+                            schema:
+                                type: array
+                                items:
+                                    $ref: '#/components/schemas/Event'
+                '404':
+                    description: No events found for the item
+
+    /api/items/{itemId}/last-event:
+        get:
+            summary: Get the last event for a specific item
+            description: Get the most recent event for a given item.
+            parameters:
+                - in: path
+                  name: itemId
+                  required: true
+                  description: The ID of the item to get the last event for
+                  schema:
+                      type: integer
+            responses:
+                '200':
+                    description: The last event of the item
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Event'
+                '404':
+                    description: Item not found
+                '500':
+                    description: Server error
+
+    /api/events:
+        post:
+            summary: Add a new event associated with an item
+            description: Add a new event, such as where the item is, who has the custody, etc.
+            requestBody:
+                required: true
+                content:
+                    application/json:
+                        schema:
+                            type: object
+                            properties:
+                                itemId:
+                                    type: integer
+                                    description: The ID of the item to associate the event with
+                                    example: 1
+                                description:
+                                    type: string
+                                    description: A description of the event
+                                    example: 'Item is in warehouse'
+                                location:
+                                    type: string
+                                    description: Location where the item is
+                                    example: 'Warehouse A'
+                                custodian:
+                                    type: string
+                                    description: Person or entity that has custody of the item
+                                    example: 'John Doe'
+            responses:
+                '201':
+                    description: Event successfully created
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Event'
+                '400':
+                    description: Invalid input
+                '500':
+                    description: Server error
+
+components:
+    schemas:
+        Item:
+            type: object
+            properties:
+                id:
+                    type: integer
+                name:
+                    type: string
+                color:
+                    type: string
+                price:
+                    type: number
+                    format: float
+                events:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/Event'
+
+        Event:
+            type: object
+            properties:
+                id:
+                    type: integer
+                itemId:
+                    type: integer
+                    description: ID of the associated item
+                description:
+                    type: string
+                location:
+                    type: string
+                custodian:
+                    type: string
+                timestamp:
+                    type: string
+                    format: date-time
