@@ -6,7 +6,8 @@
 	"scripts": {
 		"dev": "nodemon src/index.ts",
 		"build": "tsc",
-		"start": "npx ts-node src/index.ts"
+		"start": "npx ts-node src/index.ts",
+		"test": "jest"
 	},
 	"keywords": [],
 	"author": "",

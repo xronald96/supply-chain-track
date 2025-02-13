@@ -1,7 +1,5 @@
 import { Event } from '../models/Event';
-import { Item } from '../models/Item';
 import { EventRepository } from '../repositories/eventRepository';
-import { AppDataSource } from '../config/database';
 import { ItemRepository } from '../repositories/itemRepository';
 
 export class EventService {
