@@ -1,22 +1,19 @@
-// controllers/ItemController.ts
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { ItemService } from '../services/itemService';
 
 const itemService = new ItemService();
 
-// Crear un item
-export const createItem = async (req: Request, res: Response) => {
+export const createItem = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const { name, color, price } = req.body;
 		const newItem = await itemService.createItem(name, color, price);
 		res.status(201).json(newItem);
 	} catch (error) {
-		res.status(500).json({ message: 'Error creating item', error });
+		next(error);
 	}
 };
 
-// Actualizar un item
-export const updateItem = async (req: Request, res: Response) => {
+export const updateItem = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const { id } = req.params;
 		const { name, color, price } = req.body;
@@ -29,12 +26,11 @@ export const updateItem = async (req: Request, res: Response) => {
 
 		res.json(updatedItem);
 	} catch (error) {
-		res.status(500).json({ message: 'Error updating item', error });
+		next(error);
 	}
 };
 
-// Obtener los eventos de un item
-export const getItemEvents = async (req: Request, res: Response) => {
+export const getItemEvents = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const { id } = req.params;
 		const item = await itemService.getItemEvents(parseInt(id));
@@ -45,12 +41,11 @@ export const getItemEvents = async (req: Request, res: Response) => {
 
 		res.json(item.events);
 	} catch (error) {
-		res.status(500).json({ message: 'Error fetching events', error });
+		next(error);
 	}
 };
 
-// Obtener el último evento de un item
-export const getLastEvent = async (req: Request, res: Response) => {
+export const getLastEvent = async (req: Request, res: Response, next: NextFunction) => {
 	try {
 		const { itemId } = req.params;
 		const lastEvent = await itemService.getLastEvent(parseInt(itemId));
@@ -61,6 +56,6 @@ export const getLastEvent = async (req: Request, res: Response) => {
 
 		res.json(lastEvent);
 	} catch (error) {
-		res.status(500).json({ message: 'Error fetching last event', error });
+		next(error);
 	}
 };
